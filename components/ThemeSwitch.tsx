@@ -1,49 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface ThemeSwitchProps {
   isCollapsed?: boolean;
 }
 
 const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ isCollapsed = false }) => {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const storedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    const shouldBeDark = storedTheme === "dark" || (!storedTheme && prefersDark);
-    setIsDark(shouldBeDark);
-
-    if (shouldBeDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newDarkState = !isDark;
-    setIsDark(newDarkState);
-
-    if (newDarkState) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
-
-  if (!mounted) {
-    return null;
-  }
+  const { isDark, toggleTheme } = useTheme();
 
   if (isCollapsed) {
     return (
