@@ -9,22 +9,30 @@ interface ThemeSwitchProps {
 
 const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ isCollapsed = false }) => {
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const storedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    if (storedTheme === "dark" || (!storedTheme && prefersDark)) {
-      setIsDark(true);
+    const shouldBeDark = storedTheme === "dark" || (!storedTheme && prefersDark);
+    setIsDark(shouldBeDark);
+
+    if (shouldBeDark) {
       document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
+    const newDarkState = !isDark;
+    setIsDark(newDarkState);
+
+    if (newDarkState) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
@@ -32,6 +40,10 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ isCollapsed = false }) => {
       localStorage.setItem("theme", "light");
     }
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   if (isCollapsed) {
     return (
